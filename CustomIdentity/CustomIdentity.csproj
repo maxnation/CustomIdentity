@@ -4,4 +4,10 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Reference Include="CustomORM">
+      <HintPath>..\..\ConsoleApp1\CustomORM\bin\Debug\CustomORM.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
