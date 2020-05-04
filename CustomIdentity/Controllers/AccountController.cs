@@ -10,10 +10,42 @@ namespace CustomIdentity.Controllers
     public class AccountController : Controller
     {
         private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public AccountController(SignInManager<ApplicationUser> signInManager)
+        public AccountController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager)
         {
             this.signInManager = signInManager;
+            this.userManager = userManager;
+        }
+
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                ApplicationUser user = new ApplicationUser { Username = model.Username, NormalizedUserName = model.Username.ToUpper() };
+               
+                var result = await this.userManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
+                    await this.signInManager.SignInAsync(user, false);
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
+            }
+            return View(model);
         }
 
         [HttpGet]
@@ -21,6 +53,8 @@ namespace CustomIdentity.Controllers
         {
             return View();
         }
+
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
