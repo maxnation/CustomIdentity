@@ -41,17 +41,53 @@ namespace CustomIdentity.Data.CustomIdentity
 
         public Task<ApplicationUser> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            return Task.Factory.StartNew(() =>
+            {
+                ApplicationUser user = null;
+                try
+                {
+                    user = this.context.Users.Find(Int32.Parse(userId));
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+                return user;
+            }, cancellationToken);
         }
 
         public Task<ApplicationUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.Factory.StartNew(() =>
+            {
+                ApplicationUser user = null;
+                try
+                {
+                    user = this.context.Users.FindUserByName(normalizedUserName.ToLower()) as ApplicationUser;
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+                return user;
+            }, cancellationToken);
         }
 
         public Task<string> GetNormalizedUserNameAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(user.NormalizedUserName);
         }
 
         public Task<string> GetPasswordHashAsync(ApplicationUser user, CancellationToken cancellationToken)
@@ -61,12 +97,26 @@ namespace CustomIdentity.Data.CustomIdentity
 
         public Task<string> GetUserIdAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(user.Id.ToString());
         }
 
         public Task<string> GetUserNameAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(user.Username);
         }
 
         public Task<bool> HasPasswordAsync(ApplicationUser user, CancellationToken cancellationToken)
