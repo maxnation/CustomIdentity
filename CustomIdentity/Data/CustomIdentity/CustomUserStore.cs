@@ -92,7 +92,7 @@ namespace CustomIdentity.Data.CustomIdentity
 
         public Task<string> GetPasswordHashAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(user.Password);
         }
 
         public Task<string> GetUserIdAsync(ApplicationUser user, CancellationToken cancellationToken)
@@ -121,7 +121,8 @@ namespace CustomIdentity.Data.CustomIdentity
 
         public Task<bool> HasPasswordAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            bool result = user.Password != null ? true : false;
+            return Task.FromResult(result);
         }
 
         public Task SetNormalizedUserNameAsync(ApplicationUser user, string normalizedName, CancellationToken cancellationToken)
@@ -131,7 +132,10 @@ namespace CustomIdentity.Data.CustomIdentity
 
         public Task SetPasswordHashAsync(ApplicationUser user, string passwordHash, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.Factory.StartNew(() =>
+            {
+                user.Password = passwordHash;
+            });
         }
 
         public Task SetUserNameAsync(ApplicationUser user, string userName, CancellationToken cancellationToken)
