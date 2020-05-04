@@ -13,32 +13,7 @@ namespace CustomIdentity.Data.CustomIdentity
             this.context = context;
         }
 
-        public Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IdentityResult> DeleteAsync(ApplicationUser user, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        #region IDisposable
-        private void ThrowIfDisposed()
-        {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(GetType().Name);
-            }
-        }
-
-        private bool _disposed;
-        public void Dispose()
-        {
-            this._disposed = true;
-        }
-        #endregion
-
+        #region IUserStore necessary methods
         public Task<ApplicationUser> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -90,11 +65,6 @@ namespace CustomIdentity.Data.CustomIdentity
             return Task.FromResult(user.NormalizedUserName);
         }
 
-        public Task<string> GetPasswordHashAsync(ApplicationUser user, CancellationToken cancellationToken)
-        {
-            return Task.FromResult(user.Password);
-        }
-
         public Task<string> GetUserIdAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -118,24 +88,59 @@ namespace CustomIdentity.Data.CustomIdentity
 
             return Task.FromResult(user.Username);
         }
+        #endregion
 
-        public Task<bool> HasPasswordAsync(ApplicationUser user, CancellationToken cancellationToken)
-        {
-            bool result = user.Password != null ? true : false;
-            return Task.FromResult(result);
-        }
-
-        public Task SetNormalizedUserNameAsync(ApplicationUser user, string normalizedName, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
+        #region Password hashing
         public Task SetPasswordHashAsync(ApplicationUser user, string passwordHash, CancellationToken cancellationToken)
         {
             return Task.Factory.StartNew(() =>
             {
                 user.Password = passwordHash;
             });
+        }
+
+        public Task<string> GetPasswordHashAsync(ApplicationUser user, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(user.Password);
+        }
+
+        public Task<bool> HasPasswordAsync(ApplicationUser user, CancellationToken cancellationToken)
+        {
+            bool result = user.Password != null ? true : false;
+            return Task.FromResult(result);
+        }
+        #endregion
+
+        #region IDisposable
+        private void ThrowIfDisposed()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(GetType().Name);
+            }
+        }
+
+        private bool _disposed;
+        public void Dispose()
+        {
+            this._disposed = true;
+        }
+        #endregion
+
+        #region IUserStore stubs
+        public Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IdentityResult> DeleteAsync(ApplicationUser user, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetNormalizedUserNameAsync(ApplicationUser user, string normalizedName, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
 
         public Task SetUserNameAsync(ApplicationUser user, string userName, CancellationToken cancellationToken)
@@ -147,5 +152,10 @@ namespace CustomIdentity.Data.CustomIdentity
         {
             throw new NotImplementedException();
         }
+        #endregion
     }
+
+
+
 }
+
