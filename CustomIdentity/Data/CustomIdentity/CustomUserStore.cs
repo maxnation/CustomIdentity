@@ -7,6 +7,12 @@ namespace CustomIdentity.Data.CustomIdentity
 {
     public class CustomUserStore : IUserStore<ApplicationUser>, IUserPasswordStore<ApplicationUser>
     {
+        private ApplicationDbContext context;
+        public CustomUserStore(ApplicationDbContext context)
+        {
+            this.context = context;
+        }
+
         public Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
@@ -17,10 +23,21 @@ namespace CustomIdentity.Data.CustomIdentity
             throw new NotImplementedException();
         }
 
+        #region IDisposable
+        private void ThrowIfDisposed()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(GetType().Name);
+            }
+        }
+
+        private bool _disposed;
         public void Dispose()
         {
-            throw new NotImplementedException();
+            this._disposed = true;
         }
+        #endregion
 
         public Task<ApplicationUser> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
