@@ -13,7 +13,7 @@ namespace CustomIdentity.Data.CustomIdentity
             this.context = context;
         }
 
-        #region IUserStore necessary methods
+        #region IUserStore implementation
         public Task<ApplicationUser> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -88,6 +88,80 @@ namespace CustomIdentity.Data.CustomIdentity
 
             return Task.FromResult(user.Username);
         }
+
+        public Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            return Task.Factory.StartNew(() =>
+            {
+                IdentityResult identityResult;
+                try
+                {
+                    context.Users.Add(user);
+                    identityResult = IdentityResult.Success;
+                }
+                catch (Exception e)
+                {
+                    var identityError = new IdentityError { Description = e.Message };
+                    identityResult = IdentityResult.Failed(identityError);
+                }
+                return identityResult;
+            }, cancellationToken);
+        }
+
+        public Task<IdentityResult> DeleteAsync(ApplicationUser user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.Factory.StartNew(() =>
+            {
+                var ir = new IdentityResult();
+                try
+                {
+                    context.Users.Delete(user);
+                    ir = IdentityResult.Success;
+
+                }
+                catch (Exception e)
+                {
+                    var identityError = new IdentityError { Description = e.Message };
+                    ir = IdentityResult.Failed(identityError);
+                }
+                return ir;
+            }, cancellationToken);
+        }
+
+        public Task SetNormalizedUserNameAsync(ApplicationUser user, string normalizedName, CancellationToken cancellationToken)
+        {
+            user.NormalizedUserName = normalizedName;
+            return Task.CompletedTask;
+        }
+
+        public Task SetUserNameAsync(ApplicationUser user, string userName, CancellationToken cancellationToken)
+        {
+            user.Username = userName;
+            return Task.CompletedTask;
+        }
+
+        public Task<IdentityResult> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
 
         #region Password hashing
@@ -127,32 +201,7 @@ namespace CustomIdentity.Data.CustomIdentity
         }
         #endregion
 
-        #region IUserStore stubs
-        public Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task<IdentityResult> DeleteAsync(ApplicationUser user, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SetNormalizedUserNameAsync(ApplicationUser user, string normalizedName, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SetUserNameAsync(ApplicationUser user, string userName, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IdentityResult> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-        #endregion
     }
 
 

@@ -12,6 +12,7 @@ namespace CustomIdentity.Models
         public string Password { get; set; }
 
         [Compare("Password", ErrorMessage = "Пароли не совпадают")]
+        [DataType(DataType.Password)]
         [Required]
         public string PasswordConfirm { get; set; }
     }
